@@ -1,1 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>カレンダー</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; }
+    td { border: 1px solid #ccc; padding: 5px; text-align: center; }
+    .off { background: #f88; }
+    .off2 { background: #ffccaa; }
+    .dayoff3 { color: red; }
+    .today { background: yellow; }
+    .is-disabled { color: #aaa; }
+  </style>
+</head>
+<body>
+  <div id="calendar"></div>
+  <script>
+    const month = 5;
+    const ary_dayoff = [8,15,22,23,29];
+    const ary_lastdayoff = [];
+    const ary_nextdayoff = [];
+    const ary_dayoffS = [21];
+    const ary_lastdayoffS = [];
+    const ary_nextdayoffS = [];
+    const txt_dayoffS = "<br><span class='dayoff3'>★</span>特別診療 午後のみ18時まで";
+    const ary_dayoffS2 =[3,4,5,6];
+    // <br class='br_resp0'><span class='dayoff3'>★</span>午前診療のみ
+    const calendar = document.getElementById("calendar");
+    const days = ["日", "月", "火", "水", "木", "金", "土"];
+    const date = new Date();
+    const today = date.getDate();
+    let year = date.getFullYear();
+    let calendarHtml = ""; 
+    const ym = `${year}年${month}月`;          
+    
+    calendarHtml += "<table><tr><td class='ym' colspan=7>" + ym + "</td></tr>";
+    calendarHtml += "<tr><td colspan=7 class='calendar_footer'><span class='maru'>●</span>通常診療 午前9:00～12:30 午後15:00～20:00<br><span class='maru'>△</span>午後のみ診療 15:00～20:00" + txt_dayoffS + "　</td></tr>";
+    //<br class='br_resp0'>
+    
+    // 曜日の行を作成(テーブル1行目)
+    calendarHtml += days.map(day => `<td>${day}</td>`).join("");
+    calendarHtml += "</tr>";
+    
+    const lastMonthEndDate = new Date(year, month - 1, 0);
+    const lastMonthEndDayCount = lastMonthEndDate.getDate();
+    const startDay = new Date(year, month - 1, 1).getDay();
+    const endDate = new Date(year, month, 0).getDate();
+    let dayCount = 1;
+    let nextDayCount = 1;
+    
+    // 特定の日のHTMLを生成する関数
+    function generateDayHtml(day, type) {
+      switch (type) {
+        case 'off':
+          return `<td class="off">${day}<p class='dayoff'>休</p></td>`;
+        case 'half':
+          return `<td class="off2">${day}<p class='dayoff'>△</p></td>`;
+        case 'special':
+          return `<td class="off2">${day}<p class='dayoff3'>★</p></td>`; //
+        case 'today':
+          return `<td class='today'>${day}<p>●</p></td>`;
+        default:
+          return `<td>${day}<p>●</p></td>`;
+      }
+    }
+    
+    for (let w = 0; w < 6; w++) {
+      calendarHtml += "<tr>";
+      for (let d = 0; d < 7; d++) {
+        if (w === 0 && d < startDay) { // 前月の日付
+          let num = lastMonthEndDayCount - startDay + d + 1;
+          if (ary_lastdayoff.includes(num)) {
+            calendarHtml += generateDayHtml(num, 'off');
+          } else if(ary_lastdayoffS.includes(num)) {
+            calendarHtml += generateDayHtml(num, 'special');
+          } else { 
+            calendarHtml += `<td class="is-disabled">${num}<p class='blank'>.</p></td>`;  
+          }
+        } else if (dayCount <= endDate) { // 今月の日付
+          if (ary_dayoff.includes(dayCount)) {
+            calendarHtml += generateDayHtml(dayCount, 'off');
+          } else if (ary_dayoffS.includes(dayCount)) {
+            calendarHtml += generateDayHtml(dayCount, 'special');
+          } else if (ary_dayoffS2.includes(dayCount)) {
+            calendarHtml += generateDayHtml(dayCount, 'half');
+          } else if (d === 2 || d === 3) { // 火曜 or 水曜に「△」を表示
+            calendarHtml += generateDayHtml(dayCount, 'half');
+          } else if (dayCount === today) {
+            calendarHtml += generateDayHtml(dayCount, 'today');
+          } else {
+            calendarHtml += generateDayHtml(dayCount, 'default');
+          }
+          dayCount++;
+        } else { // 翌月の日付
+          if (ary_nextdayoff.includes(nextDayCount)) {
+            calendarHtml += generateDayHtml(nextDayCount, 'off');
+          } else if(ary_nextdayoffS.includes(nextDayCount)){
+            calendarHtml += generateDayHtml(nextDayCount, 'special');
+          } else {
+            calendarHtml += `<td class="is-disabled">${nextDayCount}<p class='blank'>.</p></td>`;
+          }
+          nextDayCount++;
+        }
+      }
+      calendarHtml += "</tr>";
+    }
+    
+    calendarHtml += "</table>";
+    calendar.insertAdjacentHTML("afterbegin", calendarHtml);
 
+  </script>
+</body>
+</html>
