@@ -16,14 +16,14 @@
 <body>
   <div id="calendar"></div>
   <script>
-    const month = 5;
-    const ary_dayoff = [8,15,22,23,29];
+    const month = 6;
+    const ary_dayoff = [5,13,19,26];
     const ary_lastdayoff = [];
     const ary_nextdayoff = [];
-    const ary_dayoffS = [21];
+    const ary_dayoffS = [];
     const ary_lastdayoffS = [];
     const ary_nextdayoffS = [];
-    const txt_dayoffS = "<br><span class='dayoff3'>★</span>特別診療 午後のみ18時まで";
+    const txt_dayoffS = "";//"<br><span class='dayoff3'>★</span>特別診療 午後のみ18時まで";
     const ary_dayoffS2 =[3,4,5,6];
     // <br class='br_resp0'><span class='dayoff3'>★</span>午前診療のみ
     const calendar = document.getElementById("calendar");
